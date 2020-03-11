@@ -1,0 +1,44 @@
+.header {
+    z-index: 10;
+    position: relative;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 1em;
+    box-shadow: var(--shadow);
+    background: #fff;
+}
+
+.app-name {
+    font-size: var(--large);
+    color: var(--main-color);
+    font-weight: var(--bold);
+}
+
+.link {
+    display: inline-flex;
+    justify-content: center;
+    align-items: center;
+    padding: .75em 1em;
+    border: none;
+    border-radius: 5px;
+    font-family: Roboto, 'sans-serif';
+    font-size: var(--small);
+    text-decoration: none;
+    cursor: pointer;
+    transition: .3s all;
+}
+
+.link.outlined {
+    border: 1px solid var(--main-color);
+}
+
+.link.outlined:hover {
+    background: var(--main-color);
+    color: #fff;
+}
+
+.link.contained {
+    background: var(--main-color);
+    color: #fff;
+}

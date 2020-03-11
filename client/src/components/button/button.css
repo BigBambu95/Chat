@@ -1,0 +1,37 @@
+
+.btn {
+    display: inline-flex;
+    justify-content: center;
+    align-items: center;
+    padding: .75em 1em;
+    border: none;
+    border-radius: 5px;
+    font-family: Roboto, 'sans-serif';
+    font-size: var(--small);
+    cursor: pointer;
+    background: none;
+    transition: .3s all;
+}
+
+
+.btn.outlined {
+    border: 1px solid var(--main-color);
+}
+
+.btn.outlined:hover {
+    background: var(--main-color);
+    color: #fff;
+}
+
+.btn.contained {
+    background: var(--main-color);
+    color: #fff;
+}
+
+.btn.text {
+    
+}
+
+.btn.text:hover {
+    color: var(--main-color)
+}
