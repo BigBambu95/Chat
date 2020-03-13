@@ -1,12 +1,12 @@
 import React, { useEffect, useState } from 'react';
 import { connect } from 'react-redux';
-import { Switch, Route } from 'react-router-dom';
+import { Switch, Route, Redirect } from 'react-router-dom';
 
 import socket from '../../config/socket';
 import { 
     profileRequest, getMessage, loginRequest, logout,
     addNotification, addUser, startConversationRequest, sendMessage,
-    startConversationResponse
+    startConversationResponse, removeUser, getUserList
 } from '../../actions';
 
 import Header from '../header';
@@ -25,7 +25,8 @@ const App = ({
     logout, sendMessage, getMessage, 
     conversation, username, addNotification,
     notification, addUser, users, 
-    startConversation, startConversationResponse
+    startConversation, startConversationResponse,
+    error, removeUser, getUserList
 }) => {
 
     const [modalIsOpen, setModalIsOpen] = useState(false);
@@ -47,7 +48,7 @@ const App = ({
         });
 
         socket.on('get user list', (users) => {
-            console.log(users);
+            getUserList(users);
         });
 
         socket.on('typing', (data) => {
@@ -55,6 +56,7 @@ const App = ({
         });
 
         socket.on('user left', (data) => {
+            removeUser(data.username);
             addNotification(data);
         });
 
@@ -79,8 +81,9 @@ const App = ({
             <Header isAuth={isAuth} logout={logout} />
             <div className="container">
             <main>
+                <Redirect path="/" to="/login" />
                 <Switch>
-                    <Route path="/login" render={() => <LoginForm login={login} />} />
+                    <Route path="/login" render={() => <LoginForm login={login} error={error} />} />
                     <Route path="/join" component={JoinForm} />
                     <Route path="/users" render={() => <UserList users={users} startConversation={startConversation} />} />
                     <Route path="/chat" render={() => <Chat sendMessage={sendMessage} conversation={conversation} username={username} isAuth={isAuth} notification={notification} />} />
@@ -102,7 +105,8 @@ const mapStateToProps = state => {
         username: state.chat.user.username,
         users: state.chat.users,
         conversation: state.chat.conversation,
-        notification: state.chat.notification
+        notification: state.chat.notification,
+        error: state.chat.error
     }
 }
 
@@ -114,7 +118,9 @@ const mapDispatchToProps = dispatch => {
         sendMessage: (msg) => dispatch(sendMessage(msg)),
         getMessage: (msg) => dispatch(getMessage(msg)),
         addNotification: (msg) => dispatch(addNotification(msg)),
+        getUserList: (users) => dispatch(getUserList(users)),
         addUser: (user) => dispatch(addUser(user)),
+        removeUser: (user) => dispatch(removeUser(user)),
         startConversation: (data) => dispatch(startConversationRequest(data)),
         startConversationResponse: (response) => dispatch(startConversationResponse(response))
     }

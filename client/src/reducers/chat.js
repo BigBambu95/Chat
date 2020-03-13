@@ -97,10 +97,24 @@ const chatReducer = (state, action) => {
                 notification: action.payload
             };
 
+        case actions.GET_USERLIST:
+            const newUsers = action.payload.filter(item => item.username !== state.user.username);
+
+            return {
+                ...state,
+                users: newUsers
+            }
+
         case actions.ADD_USER:
             return {
                 ...state,
                 users: state.users.concat(action.payload)
+            }
+
+        case actions.REMOVE_USER:
+            return {
+                ...state,
+                users: state.users.filter(item => item.username !== action.payload)
             }
 
 

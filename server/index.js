@@ -7,6 +7,9 @@ const bodyParser = require('body-parser');
 const passport = require('passport');
 const mongoose = require('mongoose');
 
+// Load models
+const User = require('./models/User');
+
 // Load routes
 const users = require('./routes/api/users');
 
@@ -17,7 +20,6 @@ dotenv.config();
 
 // Server port
 const PORT = process.env.PORT || 3000;
-
 
 const dbUri = `mongodb+srv://${process.env.MONGO_USER}:${process.env.MONGO_PASSWORD}@cluster0-ssc1v.mongodb.net/ChatApp?retryWrites=true&w=majority`;
 
@@ -48,76 +50,90 @@ app.get('/', (req, res) => {
     res.send("Сервер запущен");
 });
 
+
 app.use('/api/users', users);
 
+io.on('connection', (socket) => {
 
-    io.on('connection', (socket) => {
+    socket.on('message', (msg) => {
+        const date = new Date();
+        const time = `${date.getHours()}:${date.getMinutes()}`;
 
-        socket.on('message', (msg) => {
-            const date = new Date();
-            const time = `${date.getHours()}:${date.getMinutes()}`;
+        const { username, message } = msg;
 
-            const { username, message } = msg;
-
-            io.to(msg.id).emit('message', {
-                time,
-                username,
-                message
-            });
+        io.to(msg.id).emit('message', {
+            time,
+            username,
+            message
         });
+    });
 
-        socket.on('new user', user => {
-            // const checkAvailability = (arr, val) => {
-            //     return arr.some(({ username }) => val === username);
-            // }
+    socket.on('new user', user => {
+        socket.username = user;
 
-            socket.username = user;
+        User.findOne({ username: socket.username }, (err, doc) => {
+            if(err) return res.json({ message: 'Не удалось найти пользователя' });
+            
+            doc.status = 'online';
+            doc.chatId = socket.id;
 
-            // if(!checkAvailability(res.locals.users, user)) {
-            //     res.locals.users.push({
-            //         username: socket.username,
-            //         id: socket.id
-            //     });
-            // }
+            doc.save((err, doc) => {
+                if(err) return res.json({ message: 'Не удалось установить статус онлайн' })
+
+                socket.broadcast.emit('user join', {
+                    username: socket.username,
+                    id: socket.id
+                });
+    
+                User.find({ status: 'online' })
+                    .select('username')
+                    .select('chatId')
+                    .select('-_id')
+                    .exec((err, docs) => {
+                        if(err) return res.json({ message: 'Не удалось получить список пользователей' });
+
+                        socket.emit('get user list', docs); 
+                    });
 
 
-            socket.broadcast.emit('user join', {
-                username: socket.username,
-                id: socket.id
             });
 
-            // socket.emit('get user list', res.locals.users);
         });
+    });
 
-        socket.on('start conversation', (data) => {
+    socket.on('start conversation', (data) => {
+        socket.join(data.id);
+        socket.broadcast.to(data.id).emit('start conversation', {
+            type: 'start conversation',
+            username: socket.username,
+            id: socket.id
+        });
+    })
+    
+    socket.on('start conversation response', (data) => {
+        if(data.success) {
             socket.join(data.id);
-            socket.broadcast.to(data.id).emit('start conversation', {
-                type: 'start conversation',
-                username: socket.username,
-                id: socket.id
-            });
-        })
-        
-        socket.on('start conversation response', (data) => {
-            if(data.success) {
-                socket.join(data.id);
-            }
-        });
+        }
+    });
 
-        socket.on('typing', () => {
-            socket.broadcast.emit('typing', {
-                type: 'typing',
-                username: socket.username
-            });
+    socket.on('typing', () => {
+        socket.broadcast.emit('typing', {
+            type: 'typing',
+            username: socket.username
         });
+    });
 
-        socket.on('disconnect', () => {
+    socket.on('disconnect', () => {
+        User.findOneAndUpdate({ username: socket.username }, { status: 'offline', chatId: '' }, (err, res) => {
+            if(err) return res.json({ message: 'Не удалось установить статус офлайн' });
+ 
             socket.broadcast.emit('user left', {
                 type: 'disconnect',
                 username: socket.username
             });
         });
     });
+});
 
 
 server.listen(PORT, () => {

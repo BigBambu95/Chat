@@ -3,7 +3,7 @@ import Button from '../button';
 
 import './login-form.css';
 
-const LoginForm = ({ login }) => {
+const LoginForm = ({ login, error }) => {
 
     const [username, setUsername] = useState('');
     const [password, setPassword] = useState('');
@@ -31,6 +31,7 @@ const LoginForm = ({ login }) => {
                     <Button className="contained">Отправить</Button>
                 </div>
             </form>
+            <p className="error">{error}</p>
         </div>
     )
 };

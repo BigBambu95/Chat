@@ -103,6 +103,12 @@ const getMessage = (msg) => {
     }
 };
 
+const getUserList = (users) => {
+    return {
+        payload: users,
+        type: actions.GET_USERLIST
+    }
+}
 
 const addUser = (user) => {
     return {
@@ -110,6 +116,13 @@ const addUser = (user) => {
         type: actions.ADD_USER
     }
 };
+
+const removeUser = (user) => {
+    return {
+        payload: user,
+        type: actions.REMOVE_USER
+    }
+}
 
 const addNotification = (notification) => {
   return {
@@ -147,7 +160,9 @@ export {
     requestMessagesError,
     sendMessage,
     getMessage,
+    getUserList,
     addUser,
+    removeUser,
     addNotification,
     addNotificationSuccess
 }
