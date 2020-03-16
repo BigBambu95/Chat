@@ -137,19 +137,31 @@ function* startConversationResponse(action) {
 //     }
 // }
 
-function* watchSetConversationStatus() {
-    yield takeEvery(actions.SET_CONVERSTAION_STATUS, setConversationStatusAsync);
+function* watchTyping() {
+    yield takeEvery(actions.SET_CONVERSTAION_STATUS, typingAsync);
 }
 
-function* setConversationStatusAsync(action) {
+function* typingAsync(action) {
     try {
-        if(action.payload === 'typing') {
-            yield socket.emit('typing', action.payload);
-        }
+        yield socket.emit('typing', action.payload);
     } catch(err) {
         console.log(err);
     }
 }
+
+function* watchLeaveConversation() {
+    yield takeEvery(actions.LEAVE_CONVERSATION, leaveConversationAsync);
+}
+
+function* leaveConversationAsync() {
+    try {
+        yield put(push('/users'));
+        yield socket.emit('leave conversation');
+    } catch (err) {
+        console.error(err);
+    }
+}
+
 
 export default function* rootSaga() {
     yield fork(watchRegister);
@@ -159,5 +171,6 @@ export default function* rootSaga() {
     yield fork(watchStartConversation);
     yield fork(watchSendMessage);
     yield fork(watchStartConversationResponse);
-    yield fork(watchSetConversationStatus);
+    yield fork(watchTyping);
+    yield fork(watchLeaveConversation);
 }

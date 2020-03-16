@@ -131,7 +131,9 @@ export const addNotification = (notification) => {
   }
 };
 
-const addNotificationSuccess = (notification) => {
+export const removeNotification = () => actions.REMOVE_NOTIFICATION;
+
+export const addNotificationSuccess = (notification) => {
   return {
       payload: notification,
       type: actions.ADD_NOTIFICATION_SUCCESS
@@ -159,3 +161,5 @@ export const setConversationStatus = (status) => {
         type: actions.SET_CONVERSTAION_STATUS
     }
 }
+
+export const leaveConversation = () => actions.LEAVE_CONVERSATION;

@@ -120,6 +120,12 @@ const chatReducer = (state, action) => {
                 notification: action.payload
             };
 
+        case actions.REMOVE_NOTIFICATION:
+            return {
+                ...state,
+                notification: {}
+            };
+
         case actions.GET_USERLIST:
             const newUsers = action.payload.filter(item => item.username !== state.user.username);
 
@@ -167,13 +173,24 @@ const chatReducer = (state, action) => {
                 notification: {}
             }
 
-        case actions.SET_CONVERSTAION_STATUS:
-            
+        case actions.SET_CONVERSTAION_STATUS:         
             return {
                 ...state,
                 conversation: {
                     ...state.conversation,
                     status: action.payload
+                },
+                notification: {}
+            }
+
+        case actions.LEAVE_CONVERSATION:
+            return {
+                ...state,
+                conversation: {
+                    id: '',
+                    username: '',
+                    status: '',
+                    messages: []
                 },
                 notification: {}
             }

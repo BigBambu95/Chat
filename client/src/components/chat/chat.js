@@ -7,7 +7,8 @@ import './chat.css';
 
 const Chat = ({
     conversation, notification, sendMessage, 
-    username, isAuth, setConversationStatus
+    username, isAuth, setConversationStatus,
+    leaveConversation
 }) => {
 
     useEffect(() => {
@@ -44,7 +45,7 @@ const Chat = ({
         <div styleName="chat">
             <header styleName="header">
                 <div>
-                    <Button>Покинуть чат</Button>
+                    <Button onClick={leaveConversation}>Покинуть чат</Button>
                 </div>
                 <div>{conversation.username}</div>
             </header>

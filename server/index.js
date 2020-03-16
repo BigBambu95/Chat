@@ -55,6 +55,17 @@ app.use('/api/users', users);
 
 io.on('connection', (socket) => {
 
+    const disconnect = () => {
+        User.findOneAndUpdate({ username: socket.username }, { status: 'offline', chatId: '' }, (err, res) => {
+            if(err) return res.json({ message: 'Не удалось установить статус офлайн' });
+ 
+            socket.broadcast.emit('user left', {
+                type: 'disconnect',
+                username: socket.username
+            });
+        });
+    }
+
     socket.on('message', (msg) => {
         const date = new Date();
         const time = `${date.getHours()}:${date.getMinutes()}`;
@@ -116,22 +127,24 @@ io.on('connection', (socket) => {
         }
     });
 
-    socket.on('typing', () => {
-        socket.broadcast.emit('typing', {
-            type: 'typing',
-            username: socket.username
-        });
+    socket.on('typing', (data) => {
+        if(data === 'typing') {
+            socket.broadcast.emit('typing', {
+                type: 'typing',
+                username: socket.username
+            });
+        } else {
+            socket.broadcast.emit('stop typing');
+        }
+
     });
 
     socket.on('disconnect', () => {
-        User.findOneAndUpdate({ username: socket.username }, { status: 'offline', chatId: '' }, (err, res) => {
-            if(err) return res.json({ message: 'Не удалось установить статус офлайн' });
- 
-            socket.broadcast.emit('user left', {
-                type: 'disconnect',
-                username: socket.username
-            });
-        });
+        disconnect();
+    });
+
+    socket.on('leave conversation', () => {
+        disconnect();
     });
 });
 

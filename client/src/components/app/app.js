@@ -7,7 +7,7 @@ import {
     profileRequest, getMessage, loginRequest, logout,
     addNotification, addUser, startConversationRequest, sendMessage,
     startConversationResponse, removeUser, getUserList,
-    setConversationStatus
+    setConversationStatus, removeNotification, leaveConversation
 } from '../../actions';
 
 import Header from '../header';
@@ -28,7 +28,8 @@ const App = ({
     notification, addUser, users, 
     startConversation, startConversationResponse,
     error, removeUser, getUserList,
-    setConversationStatus
+    setConversationStatus, removeNotification,
+    leaveConversation
 }) => {
 
     const [modalIsOpen, setModalIsOpen] = useState(false);
@@ -55,6 +56,10 @@ const App = ({
 
         socket.on('typing', (data) => {
             addNotification(data);
+        });
+
+        socket.on('stop typing', () => {
+            removeNotification();
         });
 
         socket.on('user left', (data) => {
@@ -88,7 +93,17 @@ const App = ({
                     <Route path="/login" render={() => <LoginForm login={login} error={error} />} />
                     <Route path="/join" component={JoinForm} />
                     <Route path="/users" render={() => <UserList users={users} startConversation={startConversation} loading={loading} />} />
-                    <Route path="/chat" render={() => <Chat sendMessage={sendMessage} conversation={conversation} username={username} isAuth={isAuth} notification={notification} setConversationStatus={setConversationStatus} />} />
+                    <Route path="/chat" render={() => 
+                        <Chat 
+                            sendMessage={sendMessage} 
+                            conversation={conversation} 
+                            username={username} 
+                            isAuth={isAuth} 
+                            notification={notification} 
+                            setConversationStatus={setConversationStatus}
+                            leaveConversation={leaveConversation} 
+                        />} 
+                    />
                 </Switch>
             </main>
             </div>
@@ -121,12 +136,14 @@ const mapDispatchToProps = dispatch => {
         sendMessage: (msg) => dispatch(sendMessage(msg)),
         getMessage: (msg) => dispatch(getMessage(msg)),
         addNotification: (msg) => dispatch(addNotification(msg)),
+        removeNotification: () => dispatch(removeNotification()),
         getUserList: (users) => dispatch(getUserList(users)),
         addUser: (user) => dispatch(addUser(user)),
         removeUser: (user) => dispatch(removeUser(user)),
         startConversation: (data) => dispatch(startConversationRequest(data)),
         startConversationResponse: (response) => dispatch(startConversationResponse(response)),
-        setConversationStatus: (status) => dispatch(setConversationStatus(status))
+        setConversationStatus: (status) => dispatch(setConversationStatus(status)),
+        leaveConversation: () => dispatch(leaveConversation())
     }
 }
 
