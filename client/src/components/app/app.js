@@ -6,7 +6,8 @@ import socket from '../../config/socket';
 import { 
     profileRequest, getMessage, loginRequest, logout,
     addNotification, addUser, startConversationRequest, sendMessage,
-    startConversationResponse, removeUser, getUserList
+    startConversationResponse, removeUser, getUserList,
+    setConversationStatus
 } from '../../actions';
 
 import Header from '../header';
@@ -21,12 +22,13 @@ import Modal from '../modal';
 import Button from '../button';
 
 const App = ({ 
-    isAuth, getProfile, login, 
+    isAuth, getProfile, login, loading,
     logout, sendMessage, getMessage, 
     conversation, username, addNotification,
     notification, addUser, users, 
     startConversation, startConversationResponse,
-    error, removeUser, getUserList
+    error, removeUser, getUserList,
+    setConversationStatus
 }) => {
 
     const [modalIsOpen, setModalIsOpen] = useState(false);
@@ -85,8 +87,8 @@ const App = ({
                 <Switch>
                     <Route path="/login" render={() => <LoginForm login={login} error={error} />} />
                     <Route path="/join" component={JoinForm} />
-                    <Route path="/users" render={() => <UserList users={users} startConversation={startConversation} />} />
-                    <Route path="/chat" render={() => <Chat sendMessage={sendMessage} conversation={conversation} username={username} isAuth={isAuth} notification={notification} />} />
+                    <Route path="/users" render={() => <UserList users={users} startConversation={startConversation} loading={loading} />} />
+                    <Route path="/chat" render={() => <Chat sendMessage={sendMessage} conversation={conversation} username={username} isAuth={isAuth} notification={notification} setConversationStatus={setConversationStatus} />} />
                 </Switch>
             </main>
             </div>
@@ -106,6 +108,7 @@ const mapStateToProps = state => {
         users: state.chat.users,
         conversation: state.chat.conversation,
         notification: state.chat.notification,
+        loading: state.chat.loading,
         error: state.chat.error
     }
 }
@@ -122,7 +125,8 @@ const mapDispatchToProps = dispatch => {
         addUser: (user) => dispatch(addUser(user)),
         removeUser: (user) => dispatch(removeUser(user)),
         startConversation: (data) => dispatch(startConversationRequest(data)),
-        startConversationResponse: (response) => dispatch(startConversationResponse(response))
+        startConversationResponse: (response) => dispatch(startConversationResponse(response)),
+        setConversationStatus: (status) => dispatch(setConversationStatus(status))
     }
 }
 

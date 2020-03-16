@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import MessageList from "../message-list";
 import Notification from "../notification";
 import Button from "../button";
@@ -7,8 +7,16 @@ import './chat.css';
 
 const Chat = ({
     conversation, notification, sendMessage, 
-    username, isAuth
+    username, isAuth, setConversationStatus
 }) => {
+
+    useEffect(() => {
+        if(conversation.status === 'typing') {
+            setTimeout(() => {
+                setConversationStatus('');
+            }, 2000);
+        }
+    }, [conversation.status]);
 
     const [message, setMessage] = useState('');
 
@@ -23,11 +31,23 @@ const Chat = ({
         setMessage('');
     }
 
+    const handleChange = (e) => {
+        setMessage(e.target.value);
+        if(conversation.status !== 'typing') {
+            setConversationStatus('typing');
+        }
+    }
+
     if(!isAuth) return <div styleName="no-auth-message">Авторизуйтесь чтобы воспользоваться чатом</div>;
 
     return(
         <div styleName="chat">
-            <header styleName="header">{conversation.username}</header>
+            <header styleName="header">
+                <div>
+                    <Button>Покинуть чат</Button>
+                </div>
+                <div>{conversation.username}</div>
+            </header>
             <MessageList conversation={conversation} username={username} />
             <Notification notification={notification} />
             <form styleName="form" onSubmit={handleSubmit}>
@@ -37,7 +57,7 @@ const Chat = ({
                     name="message" 
                     placeholder="Напишите сообщение..." 
                     value={message} 
-                    onChange={(e) => setMessage(e.target.value)} 
+                    onChange={(e) => handleChange(e)} 
                 />
                 <Button variant="outlined">Отправить</Button>
             </form>

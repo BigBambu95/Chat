@@ -42,3 +42,7 @@
     padding: 1em;
     border-bottom: solid 1px #e4e6e9;
 }
+
+.header button {
+    padding: 0;
+}

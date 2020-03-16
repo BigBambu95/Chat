@@ -62,33 +62,33 @@ export const logout = () => actions.LOGOUT;
 
 
 
-const fetchMessages = () => {
+export const fetchMessages = () => {
     return {
         type: actions.FETCHED_MESSAGES
     }
 };
 
-const requestMessages = () => {
+export const requestMessages = () => {
     return {
         type: actions.REQUESTED_MESSAGES
     }
 };
 
-const requestMessagesSuccess = (messages) => {
+export const requestMessagesSuccess = (messages) => {
     return {
         payload: messages,
         type: actions.REQUESTED_MESSAGES_SUCCESS,
     }
 };
 
-const requestMessagesError = (err) => {
+export const requestMessagesError = (err) => {
     return {
         payload: err,
         type: actions.REQUESTED_MESSAGES_FAILURE
     }
 };
 
-const sendMessage = msg => {
+export const sendMessage = msg => {
     return {
         payload: msg,
         type: actions.SEND_MESSAGE
@@ -96,35 +96,35 @@ const sendMessage = msg => {
 };
 
 
-const getMessage = (msg) => {
+export const getMessage = (msg) => {
     return {
         payload: msg,
         type: actions.GET_MESSAGE
     }
 };
 
-const getUserList = (users) => {
+export const getUserList = (users) => {
     return {
         payload: users,
         type: actions.GET_USERLIST
     }
 }
 
-const addUser = (user) => {
+export const addUser = (user) => {
     return {
         payload: user,
         type: actions.ADD_USER
     }
 };
 
-const removeUser = (user) => {
+export const removeUser = (user) => {
     return {
         payload: user,
         type: actions.REMOVE_USER
     }
 }
 
-const addNotification = (notification) => {
+export const addNotification = (notification) => {
   return {
       payload: notification,
       type: actions.ADD_NOTIFICATION
@@ -153,16 +153,9 @@ export const startConversationResponse = (response) => {
     }
 }
 
-export {
-    fetchMessages,
-    requestMessages,
-    requestMessagesSuccess,
-    requestMessagesError,
-    sendMessage,
-    getMessage,
-    getUserList,
-    addUser,
-    removeUser,
-    addNotification,
-    addNotificationSuccess
+export const setConversationStatus = (status) => {
+    return {
+        payload: status,
+        type: actions.SET_CONVERSTAION_STATUS
+    }
 }

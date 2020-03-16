@@ -2,8 +2,9 @@ import socket from '../config/socket';
 import { put, takeEvery, fork, call } from 'redux-saga/effects';
 import { push } from 'connected-react-router';
 import {
-    registerSuccess, registerError, getMessage,
-    loginSuccess, loginError, profileSuccess
+    registerSuccess, registerError,
+    loginSuccess, loginError, 
+    profileSuccess
 } from "../actions";
 import { actions } from "../constants";
 import { chatService } from '../index';
@@ -130,11 +131,25 @@ function* startConversationResponse(action) {
 
 // function* addNotificationAsync(action) {
 //     try {
-//         yield put(addNotificationSuccess(action.payload))
+//         yield put(addNotificationSuccess(action.payload));
 //     } catch (err) {
 //         console.log(err);
 //     }
 // }
+
+function* watchSetConversationStatus() {
+    yield takeEvery(actions.SET_CONVERSTAION_STATUS, setConversationStatusAsync);
+}
+
+function* setConversationStatusAsync(action) {
+    try {
+        if(action.payload === 'typing') {
+            yield socket.emit('typing', action.payload);
+        }
+    } catch(err) {
+        console.log(err);
+    }
+}
 
 export default function* rootSaga() {
     yield fork(watchRegister);
@@ -144,4 +159,5 @@ export default function* rootSaga() {
     yield fork(watchStartConversation);
     yield fork(watchSendMessage);
     yield fork(watchStartConversationResponse);
+    yield fork(watchSetConversationStatus);
 }

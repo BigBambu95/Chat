@@ -10,7 +10,8 @@ const chatReducer = (state, action) => {
             conversation: {
                 id: '',
                 username: '',
-                messages: []
+                messages: [],
+                status: ''
             },
             user: {},
             notification: {},
@@ -20,6 +21,14 @@ const chatReducer = (state, action) => {
     }
     
     switch (action.type) {
+        case actions.REGISTER_REQUEST:
+            return {
+                ...state,
+                user: {},
+                loading: true,
+                error: null
+            }
+
         case actions.REGISTER_SUCCESS:
             return {
                 ...state,
@@ -39,6 +48,14 @@ const chatReducer = (state, action) => {
                 error: action.payload
             }
 
+        case actions.LOGIN_REQUEST:
+            return {
+                ...state,
+                user: {},
+                loading: true,
+                error: null
+            }
+
         case actions.LOGIN_SUCCESS:
             return {
                 ...state,
@@ -46,7 +63,6 @@ const chatReducer = (state, action) => {
                     username: action.payload,
                     isAuth: true
                 },
-                loading: false, 
                 error: null
             }
 
@@ -68,6 +84,14 @@ const chatReducer = (state, action) => {
                 loading: false,
                 error: null
             }
+
+        case actions.PROFILE_REQUEST:
+            return {
+                ...state,
+                user: {},
+                loading: true,
+                error: null
+            }
         
         case actions.PROFILE_SUCCESS:
             return {
@@ -76,7 +100,6 @@ const chatReducer = (state, action) => {
                     username: action.payload,
                     isAuth: true
                 },
-                loading: false,
                 error: null
             }
 
@@ -102,7 +125,8 @@ const chatReducer = (state, action) => {
 
             return {
                 ...state,
-                users: newUsers
+                users: newUsers,
+                loading: false
             }
 
         case actions.ADD_USER:
@@ -122,7 +146,7 @@ const chatReducer = (state, action) => {
             return {
                 ...state,
                 conversation: {
-                    id: action.payload.id,
+                    id: action.payload.chatId,
                     username: action.payload.username,
                     messages: []
                 },
@@ -139,6 +163,17 @@ const chatReducer = (state, action) => {
                     ...state.conversation,
                     id: action.payload.id,
                     username: action.payload.username,
+                },
+                notification: {}
+            }
+
+        case actions.SET_CONVERSTAION_STATUS:
+            
+            return {
+                ...state,
+                conversation: {
+                    ...state.conversation,
+                    status: action.payload
                 },
                 notification: {}
             }

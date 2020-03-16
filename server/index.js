@@ -82,7 +82,7 @@ io.on('connection', (socket) => {
 
                 socket.broadcast.emit('user join', {
                     username: socket.username,
-                    id: socket.id
+                    chatId: socket.id
                 });
     
                 User.find({ status: 'online' })
@@ -102,8 +102,8 @@ io.on('connection', (socket) => {
     });
 
     socket.on('start conversation', (data) => {
-        socket.join(data.id);
-        socket.broadcast.to(data.id).emit('start conversation', {
+        socket.join(data.chatId);
+        socket.broadcast.to(data.chatId).emit('start conversation', {
             type: 'start conversation',
             username: socket.username,
             id: socket.id

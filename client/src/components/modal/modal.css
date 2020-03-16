@@ -1,4 +1,5 @@
 .modal {
+    z-index: 90;
     position: fixed;
     top: 40%;
     left: 50%;
